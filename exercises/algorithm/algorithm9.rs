@@ -1,6 +1,6 @@
 /*
-	heap
-	This question requires you to implement a binary heap function
+    heap
+    This question requires you to implement a binary heap function
 */
 // I AM NOT DONE
 
@@ -37,7 +37,29 @@ where
     }
 
     pub fn add(&mut self, value: T) {
-        //TODO
+        self.items.push(value);
+        self.count += 1;
+        for i in (1..=self.count).rev() {
+            self.heapify_up(i);
+        }
+    }
+
+    fn heapify_up(&mut self, idx: usize) {
+        let parent = self.parent_idx(idx);
+        if idx == 1 || (self.comparator)(&self.items[parent], &self.items[idx]) {
+            return;
+        }
+        self.items.swap(idx, parent);
+        self.heapify_up(parent);
+    }
+
+    fn heapify_down(&mut self, idx: usize) {
+        let smallest = self.smallest_child_idx(idx);
+        if smallest == idx {
+            return;
+        }
+        self.items.swap(idx, smallest);
+        self.heapify_down(smallest);
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -57,8 +79,21 @@ where
     }
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+        let left = self.left_child_idx(idx);
+        let right = self.right_child_idx(idx);
+        let smallest =
+            if left < self.len() && (self.comparator)(&self.items[left], &self.items[idx]) {
+                left
+            } else {
+                idx
+            };
+        let smalllest =
+            if right < self.len() && (self.comparator)(&self.items[right], &self.items[smallest]) {
+                right
+            } else {
+                smallest
+            };
+        smallest
     }
 }
 
@@ -84,8 +119,13 @@ where
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+        if self.is_empty() {
+            return None;
+        }
+        let item = self.items.swap_remove(1);
+        self.count -= 1;
+        self.heapify_down(1);
+        Some(item)
     }
 }
 
